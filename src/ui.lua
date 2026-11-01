@@ -941,6 +941,34 @@ local function marquee(value,x,y,w,size,context,background)
     if offset<distance then p.x=x+w-24;p.alpha=0;p.other_alpha=1;D("gradient",p) end
     unclip()
 end
+local function cartridge(game,x,y,selected)
+    -- Layered geometry gives the native 2D renderer a solid cartridge profile.
+    -- The cover remains dynamic; no game-specific textures are generated.
+    shadow(x+8,y+20,330,500,24,selected and 22 or 14,selected and .48 or .32)
+    box(x+9,y+12,330,500,0x151719,1,24)
+    box(x+5,y+7,330,500,0x35383b,1,24)
+    box(x,y,330,500,0x25282b,1,24)
+    D("gradient",{x=x+2,y=y+2,w=326,h=496,radius=22,axis="horizontal",color=0x686d72,other=0x17191c,alpha=.52,other_alpha=.9})
+    D("border",{x=x+2,y=y+2,w=326,h=496,radius=22,color=0,alpha=0,border=2,edge=0x8a8e92,edge_alpha=.45})
+    -- Recessed top notch and label surround.
+    box(x+116,y+9,98,12,0x111315,1,4)
+    line(x+120,y+22,x+210,y+22,0x777c80,1,.6)
+    box(x+18,y+28,294,414,0x111315,1,14)
+    box(x+24,y+34,282,402,0xf3f0e7,1,9)
+    box(x+24,y+34,282,46,0xe52b36,1,9)
+    box(x+24,y+62,282,18,0xe52b36)
+    text("NINTENDO SWITCH",x+165,y+65,22,0xffffff,"center",268)
+    clip(x+24,y+80,282,282)
+    cover(game,x+24,y+80,282,282)
+    unclip()
+    text_block(game.name,x+36,y+390,24,0x292e32,258,30,2)
+    -- Fine label gloss and the beveled insertion marker.
+    D("gradient",{x=x+24,y=y+80,w=282,h=282,axis="vertical",color=0xffffff,other=0xffffff,alpha=selected and .12 or .06,other_alpha=0})
+    line(x+140,y+459,x+165,y+478,0x111315,4)
+    line(x+165,y+478,x+190,y+459,0x111315,4)
+    line(x+140,y+458,x+190,y+458,0x111315,3)
+    line(x+32,y+489,x+298,y+489,0x777c80,1,.4)
+end
 local function render_home()
     image("home_background",0,0,1920,1080)
     box(0,0,1920,1080,0xf3f1e9,.82)
@@ -985,17 +1013,14 @@ local function render_home()
             local selected=S.zone=="games" and S.focus==i
             local lift=selected and 12 or 0
             local y=380-lift
-            shadow(x,y+6,330,500,18,12,.28)
-            box(x,y,330,500,C.shortcut,1,18)
             if all then
+                shadow(x,y+6,330,500,18,12,.28)
+                box(x,y,330,500,C.shortcut,1,18)
                 circle(x+165,y+230,90,0xe2e8ec)
                 grid_icon(x+165,y+230,100)
                 text("All Software",x+165,y+440,26,C.text,"center",300)
             elseif S.tiles[i] then
-                -- Native game artwork is square: retain its proportions inside
-                -- a portrait card instead of stretching it into a fake poster.
-                cover(S.tiles[i],x,y+32,330,330)
-                text_block(S.tiles[i].name,x+20,y+405,26,C.text,290,34,2)
+                cartridge(S.tiles[i],x,y,selected)
             end
             if amount>0 then
                 D("border",{x=x-8,y=y-8,w=346,h=516,radius=22,color=0,alpha=0,border=8,edge=C.accent,edge_alpha=amount})

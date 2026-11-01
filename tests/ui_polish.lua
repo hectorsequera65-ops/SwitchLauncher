@@ -67,6 +67,13 @@ for _,command in ipairs(commands) do
     if command.kind=="cover" then check(command.p.w==command.p.h,"Native HOME artwork retains square proportions") end
 end
 check(portrait,"Selected HOME card has a portrait outline")
+check(has("NINTENDO SWITCH"),"Game cartridges have a console label")
+local shell,recess=false,false
+for _,command in ipairs(commands) do
+    if command.kind=="rect" and command.p.w==330 and command.p.h==500 and command.p.color==0x25282b then shell=true end
+    if command.kind=="rect" and command.p.w==294 and command.p.h==414 and command.p.color==0x111315 then recess=true end
+end
+check(shell and recess,"Game cartridges render a dark shell and recessed artwork label")
 for _=1,4 do key("right",1) end
 check(S.focus==5,"HOME selected the fifth game")
 key("down");key("down");key("down");key("circle")
