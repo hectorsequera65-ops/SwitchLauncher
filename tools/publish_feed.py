@@ -42,6 +42,8 @@ def version(value):
 
 
 def feed_url(repository=REPOSITORY, channel='stable'):
+    if channel == 'cartucho' and repository == REPOSITORY:
+        repository = 'hectorsequera65-ops/SwitchLauncher'
     return f'https://raw.githubusercontent.com/{repository}/{config(channel).feed_branch}/launcher-updates.json'
 
 

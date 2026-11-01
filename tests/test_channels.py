@@ -113,6 +113,17 @@ class ChannelTests(unittest.TestCase):
             for key in ['api', 'state_schema', 'host_contract', 'required_capabilities']:
                 self.assertEqual(old[key], manifest[key])
 
+    def test_cartucho_pack_has_independent_install_identity(self):
+        archive = self.build('cartucho')
+        self.assertEqual(archive.name, 'Launcher-Cartucho-1.003.009.zip')
+        with zipfile.ZipFile(archive) as zipped:
+            self.assertTrue(all(name.startswith('launcher-cartucho/') for name in zipped.namelist()))
+            manifest = json.loads(zipped.read('launcher-cartucho/manifest.json'))
+            self.assertEqual(manifest['id'], 'launcher-cartucho')
+            self.assertEqual(manifest['name'], 'Launcher Cartucho')
+            self.assertIn('/hectorsequera65-ops/SwitchLauncher/launcher-cartucho-feed/', manifest['updates']['feed'])
+            self.assertIn(b'PACK_NAME = "Launcher Cartucho"', zipped.read('launcher-cartucho/main.lua'))
+
     def test_test_source_builds_test_by_default_and_can_promote_to_stable(self):
         manifest = self.fixture.manifest
         manifest['id'] = 'switch-ui-test'

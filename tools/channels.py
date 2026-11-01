@@ -20,6 +20,8 @@ CHANNELS = {
                       'update-feed', 'main', False),
     'test': Channel('switch-ui-test', 'Switch UI Test', 'SwitchLauncher-Test', 'test-v',
                     'test-update-feed', 'test-versions', True),
+    'cartucho': Channel('launcher-cartucho', 'Launcher Cartucho', 'Launcher-Cartucho', 'cartucho-v',
+                       'launcher-cartucho-feed', 'spanish-zelda-launcher', True),
 }
 
 

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "id": "switch-ui",
-  "name": "Switch UI",
+  "id": "launcher-cartucho",
+  "name": "Launcher Cartucho",
   "api": {
     "major": 1,
     "min_minor": 1
@@ -32,6 +32,6 @@
   "host_contract": "launcher-v1.0",
   "version": "1.005.000",
   "updates": {
-    "feed": "https://raw.githubusercontent.com/kasobos67/SwitchLauncher/update-feed/launcher-updates.json"
+    "feed": "https://raw.githubusercontent.com/hectorsequera65-ops/SwitchLauncher/launcher-cartucho-feed/launcher-updates.json"
   }
 }

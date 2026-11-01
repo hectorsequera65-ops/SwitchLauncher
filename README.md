@@ -1,3 +1,9 @@
+# Launcher Cartucho — edición personalizada en español
+
+Descarga el artefacto **Launcher-Cartucho** de la acción **Build Spanish launcher with wallpaper**. Extrae el ZIP del artefacto y después `Launcher-Cartucho-<versión>.zip`. Con ProsperoEden cerrado, copia su carpeta **`launcher-cartucho`** a `/data/prosperoeden/launchers/` y selecciona **Launcher Cartucho** en el selector de launcher.
+
+La ruta final debe ser `/data/prosperoeden/launchers/launcher-cartucho/manifest.json`. No cambies el nombre de esa carpeta. Puede convivir con Switch UI Test. Sus preferencias se guardan por separado en `/data/prosperoeden/config/launcher-state/launcher-cartucho.json`; conserva el archivo anterior `switch-ui-test.json` si quieres seguir usando aquel paquete. Las actualizaciones de esta edición se instalan manualmente desde GitHub Actions; su feed propio todavía no está publicado. La documentación original de SwitchLauncher se conserva a continuación.
+
 <details>
 <summary><strong>SwitchPS5 or SwitchLauncher?</strong></summary>
 

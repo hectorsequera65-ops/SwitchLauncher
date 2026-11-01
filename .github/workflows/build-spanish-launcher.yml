@@ -26,16 +26,16 @@ jobs:
           lua5.4 tests/ui_polish.lua
           lua5.4 tests/refresh_policy.lua
           lua5.4 tests/scroll_motion.lua
-      - name: Build Spanish test pack
+      - name: Build Launcher Cartucho
         run: |
-          python3 tools/build_release.py --channel test
+          python3 tools/build_release.py --channel cartucho
           cd dist
           sha256sum -c ./*.sha256
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: SwitchLauncher-Espanol-Fondo
+          name: Launcher-Cartucho
           path: |
-            dist/SwitchLauncher-Test-*.zip
-            dist/SwitchLauncher-Test-*.zip.sha256
+            dist/Launcher-Cartucho-*.zip
+            dist/Launcher-Cartucho-*.zip.sha256
           if-no-files-found: error
           retention-days: 30

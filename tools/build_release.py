@@ -59,6 +59,9 @@ def package(root, output, tag=None, channel=None):
     name_marker = 'local PACK_NAME = "Switch UI"'
     publisher.require(ui.count(name_marker) == 1, 'Expected one pack-name marker in src/ui.lua')
     ui = ui.replace(name_marker, 'local PACK_NAME = '+json.dumps(selected.name))
+    if channel == 'cartucho':
+        # This custom pack is distributed manually until its own feed exists.
+        ui = ui.replace('local LAUNCHER_UPDATES = true', 'local LAUNCHER_UPDATES = false')
     payload = {'main.lua': (motion+'\n'+ui).encode()}
     payload['manifest.json'] = (json.dumps(manifest, indent=2)+'\n').encode()
     for name in ['loading.json', 'README.md', 'LICENSE', 'ASSET_NOTICES.md']:
