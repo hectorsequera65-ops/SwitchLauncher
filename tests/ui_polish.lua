@@ -67,7 +67,12 @@ for _,command in ipairs(commands) do
     if command.kind=="cover" then check(command.p.w==command.p.h,"Native HOME artwork retains square proportions") end
 end
 check(portrait,"Selected HOME card has a portrait outline")
-check(has("NINTENDO SWITCH"),"Game cartridges have a console label")
+local header=false
+for _,command in ipairs(commands) do
+    if command.kind=="image" and command.p.asset=="cartridge_reference" then header=true end
+    if command.kind=="text" then check(not (command.p.y>740 and command.p.y<820),"Cartridge artwork has no separate title strip") end
+end
+check(header,"Cartridges use the approved logo artwork")
 local shell,recess=false,false
 for _,command in ipairs(commands) do
     if command.kind=="rect" and command.p.w==330 and command.p.h==500 and command.p.color==0x25282b then shell=true end
@@ -79,10 +84,14 @@ check(S.focus==5,"HOME selected the fifth game")
 key("down");key("down");key("down");key("circle")
 check(S.zone=="games" and S.focus==5,"Returning from shortcuts restores the selected game")
 key("down");check(S.focus==3,"Returning to shortcuts restores the previous shortcut")
+key("right");check(S.zone=="games" and S.focus==5,"Right exits the sidebar and restores the selected game")
+S.focus=1;key("left");check(S.zone=="shortcuts" and S.focus==3,"Left from the first game enters the sidebar")
+key("left");check(S.zone=="shortcuts" and S.focus==3,"Left within the sidebar preserves its selection")
+key("right");S.focus=5;key("down")
 key("down");check(S.focus==4,"Down moves vertically through the sidebar")
 key("up");check(S.focus==3,"Up moves vertically through the sidebar")
 draw();check(has("Abrir") and not has("Ajustes del juego"),"Shortcut footer contains only its usable action")
-key("up");key("up");key("up");key("right");draw()
+key("up");key("up");key("up");key("r1");draw()
 check(has("Usar usuario") and not has("Ajustes del juego"),"Profile footer describes selecting another user")
 key("down");draw();check(S.focus==5 and has("Iniciar") and has("Ajustes del juego"),"Profiles return to the game selection with game-specific hints")
 S.focus=2;S.strip=0;S.strip_target=0;tick(4);draw();key("right");draw();tick(2);draw()

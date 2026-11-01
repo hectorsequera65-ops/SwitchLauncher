@@ -954,16 +954,14 @@ local function cartridge(game,x,y,selected)
     box(x+116,y+9,98,12,0x111315,1,4)
     line(x+120,y+22,x+210,y+22,0x777c80,1,.6)
     box(x+18,y+28,294,414,0x111315,1,14)
-    box(x+24,y+34,282,402,0xf3f0e7,1,9)
-    box(x+24,y+34,282,46,0xe52b36,1,9)
-    box(x+24,y+62,282,18,0xe52b36)
-    text("NINTENDO SWITCH",x+165,y+65,22,0xffffff,"center",268)
-    clip(x+24,y+80,282,282)
-    cover(game,x+24,y+80,282,282)
+    -- Sample the approved header artwork as an atlas, retaining its logo,
+    -- lettering and red material instead of using the menu font.
+    image("cartridge_reference",x+24,y+34,282,72,{242/1191,175/1321,704/1191,180/1321})
+    clip(x+24,y+106,282,330)
+    cover(game,x,y+106,330,330)
     unclip()
-    text_block(game.name,x+36,y+390,24,0x292e32,258,30,2)
     -- Fine label gloss and the beveled insertion marker.
-    D("gradient",{x=x+24,y=y+80,w=282,h=282,axis="vertical",color=0xffffff,other=0xffffff,alpha=selected and .12 or .06,other_alpha=0})
+    D("gradient",{x=x+24,y=y+106,w=282,h=330,axis="vertical",color=0xffffff,other=0xffffff,alpha=selected and .12 or .06,other_alpha=0})
     line(x+140,y+459,x+165,y+478,0x111315,4)
     line(x+165,y+478,x+190,y+459,0x111315,4)
     line(x+140,y+458,x+190,y+458,0x111315,3)
@@ -2068,6 +2066,13 @@ local function input(event)
     end
     if S.screen=="home" then
         if key=="triangle" then if S.zone=="games" then request_game_settings() else sound("error") end;return end
+        if (S.zone=="shortcuts" or S.zone=="profiles") and key=="right" then
+            home_zone("games");sound("focus_navigation");return
+        end
+        if S.zone=="shortcuts" and key=="left" then return end
+        if S.zone=="games" and key=="left" and S.focus==1 then
+            home_zone("shortcuts");sound("focus_navigation");return
+        end
         if S.zone=="shortcuts" and (key=="up" or key=="down") then
             if key=="up" then
                 if S.focus==1 then S.zone="profiles" else S.focus=S.focus-1 end
@@ -2075,7 +2080,7 @@ local function input(event)
             sound("focus_navigation");return
         end
         if S.zone=="profiles" then
-            if key=="left" or key=="right" then S.profile=clamp(S.profile+(key=="right" and 1 or -1),1,math.max(1,#S.profiles));sound("focus_account")
+            if key=="left" or key=="l1" or key=="r1" then S.profile=clamp(S.profile+(key=="r1" and 1 or -1),1,math.max(1,#S.profiles));sound("focus_account")
             elseif key=="down" or key=="circle" then home_zone("games");sound("focus_navigation")
             elseif key=="cross" then local p=S.profiles[S.profile];if p then
                 if p.playing then S.profile_return="home";open("profile");S.row=1

@@ -23,7 +23,8 @@
     "about": "assets/about-outline.tga",
     "about_update": "assets/about-update.tga",
     "home_blank": "assets/home-blank.tga",
-    "home_background": "assets/home-background.tga"
+    "home_background": "assets/home-background.tga",
+    "cartridge_reference": "assets/cartridge-reference.tga"
   },
   "font": "assets/font.pefont",
   "sounds": "assets/sounds",
