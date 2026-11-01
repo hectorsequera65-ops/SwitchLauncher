@@ -72,6 +72,8 @@ Screenshots supplied by the project author. Games shown are not included.
 
 This version presents the launcher menus in Spanish and uses a fixed layout. Names, release notes and messages supplied by ProsperoEden or external servers retain their original language. New ProsperoEden features may require an updated launcher before controls for them appear here.
 
+The custom HOME layout uses a light wallpaper, a vertical sidebar and portrait cards. Native square game artwork keeps its proportions within each card; separate poster artwork and game logos are not supplied by the host. On HOME, Down opens the sidebar; Up/Down selects a shortcut, Cross opens it, and Circle returns to games. Up from the first shortcut selects the user avatar, with Left/Right switching the selected profile. The displayed clock and multiplayer connection state come from the host; play time, release year and battery data are not fabricated.
+
 ## Installation
 
 1. Download the attached **`SwitchLauncher-<version>.zip`** from this repository's [Releases](https://github.com/kasobos67/SwitchLauncher/releases). Use the named launcher ZIP, rather than GitHub's automatically generated source-code archive.

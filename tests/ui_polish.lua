@@ -49,7 +49,7 @@ end
 local function has(value)for _,c in ipairs(commands) do if c.kind=="text" and c.p.text==value then return true end end;return false end
 local function title_x(value)for _,c in ipairs(commands) do if c.kind=="text" and c.p.text==value then return c.p.x end end;error("title missing")end
 local function mask()for _,c in ipairs(commands) do if c.kind=="rect" and c.p.w==1920 and c.p.h==1080 and c.p.color==0 then return c.p.alpha end end;return 0 end
-local function borders()local n=0;for _,c in ipairs(commands) do if c.kind=="border" and c.p.w==399 and c.p.edge_alpha>0 then n=n+1 end end;return n end
+local function borders()local n=0;for _,c in ipairs(commands) do if c.kind=="border" and c.p.w==346 and c.p.edge_alpha>0 then n=n+1 end end;return n end
 app.init({state={avatars={},recent={},white=false},first_start=false});tick(180);draw();tick(2)
 draw()
 local wallpaper=false
@@ -61,13 +61,21 @@ end
 check(wallpaper,"HOME draws the supplied full-screen wallpaper")
 local palette=assert(upvalue(app.draw,"C"))
 check(palette.text==0xf5f5f5 and palette.shortcut==0x505050,"HOME restores the menu palette after drawing")
+local portrait=false
+for _,command in ipairs(commands) do
+    if command.kind=="border" and command.p.w==346 and command.p.h==516 then portrait=true end
+    if command.kind=="cover" then check(command.p.w==command.p.h,"Native HOME artwork retains square proportions") end
+end
+check(portrait,"Selected HOME card has a portrait outline")
 for _=1,4 do key("right",1) end
 check(S.focus==5,"HOME selected the fifth game")
-key("down");key("right");key("right");key("up")
+key("down");key("down");key("down");key("circle")
 check(S.zone=="games" and S.focus==5,"Returning from shortcuts restores the selected game")
 key("down");check(S.focus==3,"Returning to shortcuts restores the previous shortcut")
+key("down");check(S.focus==4,"Down moves vertically through the sidebar")
+key("up");check(S.focus==3,"Up moves vertically through the sidebar")
 draw();check(has("Abrir") and not has("Ajustes del juego"),"Shortcut footer contains only its usable action")
-key("up");key("up");key("right");draw()
+key("up");key("up");key("up");key("right");draw()
 check(has("Usar usuario") and not has("Ajustes del juego"),"Profile footer describes selecting another user")
 key("down");draw();check(S.focus==5 and has("Iniciar") and has("Ajustes del juego"),"Profiles return to the game selection with game-specific hints")
 S.focus=2;S.strip=0;S.strip_target=0;tick(4);draw();key("right");draw();tick(2);draw()

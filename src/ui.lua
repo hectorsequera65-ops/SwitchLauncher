@@ -887,7 +887,7 @@ local function refresh_models(live_only)
             if not S.scanning then S.zone="shortcuts";S.focus=2 end
         else S.focus=clamp(S.focus,1,S.home_count) end
     end
-    S.strip_target=math.min(S.strip_target,math.max(0,(S.home_count-4)*405))
+    S.strip_target=math.min(S.strip_target,math.max(0,(S.home_count-4)*365))
 end
 local function open(screen,quiet)
     if S.screen==screen then return end
@@ -915,7 +915,7 @@ local function home_zone(zone)
     S.zone=zone
     if zone=="games" then
         S.focus=clamp(S.home_game_focus or 1,1,math.max(1,S.home_count or 0))
-        S.strip_target=math.max(0,(S.focus-4)*405)
+        S.strip_target=math.max(0,(S.focus-4)*365)
     elseif zone=="shortcuts" then S.focus=clamp(S.home_shortcut_focus or 1,1,6) end
 end
 local cover_args={color=0xffffff}
@@ -942,88 +942,91 @@ local function marquee(value,x,y,w,size,context,background)
     unclip()
 end
 local function render_home()
-    -- The supplied 16:9 artwork fills HOME without cropping or distortion.
     image("home_background",0,0,1920,1080)
-    D("gradient",{x=0,y=0,w=1920,h=1080,axis="vertical",color=0,other=0,alpha=.15,other_alpha=.7})
-    local home_palette={text=C.text,title=C.title,copy=C.copy,meta=C.meta,line=C.line,shortcut=C.shortcut}
-    C.text=0xf5f5f5;C.title=0xffffff;C.copy=0xeeeeee;C.meta=0xdadada;C.line=0x777777;C.shortcut=0x424a50
-    -- Use the reference's blue selection without changing menu appearance.
-    local home_accent=C.accent
-    C.accent=0x55c9ff
+    box(0,0,1920,1080,0xf3f1e9,.82)
+    local home_palette={text=C.text,title=C.title,copy=C.copy,meta=C.meta,line=C.line,shortcut=C.shortcut,accent=C.accent}
+    C.text=0x41464a;C.title=0x30363b;C.copy=0x535a60;C.meta=0x606970;C.line=0xaeb4b9;C.shortcut=0xf8f9fa;C.accent=0x00adbd
+    box(0,0,146,1080,0xe6ebef,.78)
     local selected_key=S.zone=="profiles" and 200+S.profile or S.zone=="shortcuts" and 100+S.focus or S.focus
     track_focus(focus_history.home,selected_key)
-    for i,p in ipairs(S.profiles) do local x=100.5+(i-1)*90
-        local selected=S.zone=="profiles" and S.profile==i
-        local amount=focus_amount(focus_history.home,200+i)
-        if amount>0 then focus(x,62,72,72,true,amount) end
-        avatar(p,x,62,72,true);ring(x+36,98,37,2,C.title,.7)
-        if p.playing and not selected then box(x+16,144,40,4,C.accent,1,2) end
-        if selected or (p.playing and S.zone~="profiles") then
-            local name_width=math.min(330,measured(p.name,28)+40)
-            box(x+88,76,name_width,48,0x202a32,.65,24)
-            text(p.name,x+108,110,28,0xffffff,"left",name_width-40)
+    -- One sidebar avatar; horizontal input still selects all native profiles.
+    local profile_index=S.profile
+    if S.zone~="profiles" then
+        for i,p in ipairs(S.profiles) do if p.playing then profile_index=i;break end end
+    end
+    local profile=S.profiles[profile_index]
+    if profile then
+        local amount=focus_amount(focus_history.home,200+profile_index)
+        if amount>0 then focus(33,38,80,80,true,amount) end
+        avatar(profile,33,38,80,true)
+        if S.zone=="profiles" then
+            box(166,38,410,64,0xffffff,.94,12)
+            text(profile.name,188,80,28,C.text,"left",366)
         end
     end
-    text(S.status.clock,1814,115.5,30,C.text,"right")
+    text(S.status.clock,1754,77,30,C.text,"right")
     local phase=(S.status.room or {}).phase or 0
-    image("ui",1832,81,48,48,signal_uv[phase==2 and 3 or (phase==1 or phase==3) and 2 or 1],C.text)
+    image("ui",1780,43,48,48,signal_uv[phase==2 and 3 or (phase==1 or phase==3) and 2 or 1],C.text)
+    local g=S.tiles[S.zone=="games" and S.focus or (S.home_game_focus or 1)]
+    local title=g and g.name or "All Software"
+    if S.zone=="games" or S.zone=="shortcuts" then
+        marquee(title,430,228,1200,48,"home",0xf3f1e9)
+        text("Your games",1030,296,26,C.meta,"center",1200)
+    end
     local intro=S.intro or 100
     local ga=S.prefs.reduce_motion and 1 or curve(S.first_start and "home_starter_alpha" or "home_entry_alpha",intro*60)/255
-    local gs=S.prefs.reduce_motion and 1 or curve(S.first_start and "home_starter_scale" or "home_entry_scale",intro*60)
-    opacity(ga);transform(gs,960,483)
-    local g=S.tiles[S.focus]; local title=g and g.name or (S.home_library and "All Software" or ""); local selected_x=160.5+(S.focus-1)*405-S.strip
-    box(828,190,264,48,0x202a32,.65,24)
-    text("Your games",960,224,28,0xffffff,"center",240)
-    if S.zone=="games" then local w=math.min(900,math.max(450,measured(title,32)));marquee(title,clamp(selected_x+192-w*.5,112,1808-w),258,w,32,"home",C.base)
-    elseif (S.home_count or 0)==0 and not S.scanning then text("Add software in Game files.",160.5,258,30,C.copy,"left",1599) end
-    clip(0,278,1920,426)
-    for i=1,math.max(HOME_SLOTS,S.home_count or 0) do
-        local x=160.5+(i-1)*405-S.strip;local all=S.home_library and i==#S.tiles+1;local blank=not all and not S.tiles[i]
-        if x+384>0 and x<1920 then
-            local scale=(S.launch_time and S.focus==i) and curve("decide_scale",S.launch_time*60) or 1
-            local selected_scale=S.zone=="games" and S.focus==i and 1.035 or 1
-            transform((S.prefs.reduce_motion and 1 or scale)*selected_scale,x+192,483)
-            if blank then
-                -- Baked P_Blank material: no cover lookup or live blur for empty slots.
-                image("home_blank",x-12,279,408,408,home_blank_uv[S.state.white and 2 or 1])
-            elseif all then
-                shadow(x+72,364.5,240,240,120,7.5,.4)
-                local amount=focus_amount(focus_history.home,i)
-                if amount>0 then focus(x+72,363,240,240,true,amount) end
-                circle(x+192,483,120,C.shortcut);grid_icon(x+192,483,108)
-            else
-                cover(S.tiles[i],x,291,384,384)
-                local amount=focus_amount(focus_history.home,i)
-                if amount>0 then focus(x,291,384,384,false,amount) end
+    opacity(ga)
+    clip(160,330,1760,620)
+    for i=1,S.home_count or 0 do
+        local x=210+(i-1)*365-S.strip
+        local all=S.home_library and i==#S.tiles+1
+        if x+330>160 and x<1920 then
+            local amount=focus_amount(focus_history.home,i)
+            local selected=S.zone=="games" and S.focus==i
+            local lift=selected and 12 or 0
+            local y=380-lift
+            shadow(x,y+6,330,500,18,12,.28)
+            box(x,y,330,500,C.shortcut,1,18)
+            if all then
+                circle(x+165,y+230,90,0xe2e8ec)
+                grid_icon(x+165,y+230,100)
+                text("All Software",x+165,y+440,26,C.text,"center",300)
+            elseif S.tiles[i] then
+                -- Native game artwork is square: retain its proportions inside
+                -- a portrait card instead of stretching it into a fake poster.
+                cover(S.tiles[i],x,y+32,330,330)
+                text_block(S.tiles[i].name,x+20,y+405,26,C.text,290,34,2)
+            end
+            if amount>0 then
+                D("border",{x=x-8,y=y-8,w=346,h=516,radius=22,color=0,alpha=0,border=8,edge=C.accent,edge_alpha=amount})
             end
             if S.launch_time and S.focus==i and not all then
-                box(x,291,384,384,0xffffff,curve("decide_flash",S.launch_time*60)/255)
-                local size=450*curve("launch_effect_scale",S.launch_time*60);clip(x,291,384,384)
-                image("ui",x+192-size*.5,483-size*.5,size,size,{514/2048,136/1024,220/2048,220/1024},0xffffff,curve("launch_effect_alpha",S.launch_time*60)/255);unclip()
+                box(x,y,330,500,0xffffff,curve("decide_flash",S.launch_time*60)/255,18)
             end
-            untransform()
         end
     end
-    unclip();untransform();popopacity()
-    opacity(ga);transform(gs,960,816)
-    for i=1,6 do local x=555+(i-1)*162;shadow(x-66,751.5,132,132,66,7.5,.35)
+    unclip();popopacity()
+    for i=1,6 do
+        local y=190+(i-1)*112
         local amount=focus_amount(focus_history.home,100+i)
-        if amount>0 then focus(x-66,750,132,132,true,amount) end
-        if S.zone=="shortcuts" and S.focus==i then text(home_shortcuts[i],x,918,24,C.accent,"center",330) end
-        circle(x,816,66,C.shortcut,.78)
-        symbol(i,x,816,i<=4 and 132 or 96,shortcut_inks[i] or C.title)
+        if amount>0 then focus(33,y-40,80,80,true,amount) end
+        circle(73,y,40,C.shortcut,.95)
+        symbol(i,73,y,i<=4 and 80 or 60,shortcut_inks[i] or C.meta)
+        if S.zone=="shortcuts" and S.focus==i then
+            box(166,104,460,66,0xffffff,.94,12)
+            text(home_shortcuts[i],188,148,28,C.text,"left",416)
+        end
     end
-    untransform();popopacity()
     local notice=S.message~="" and S.message or S.state_save_error
-    if notice then text(notice,960,720,22,C.warn,"center",1608)
-    elseif (S.home.status or "")~="" then text(S.home.status,960,720,22,C.copy,"center",1608) end
-    local p=S.profiles[S.profile]
-    footer(S.zone=="profiles" and (p and p.playing and home_hints.profile or home_hints.choose)
-        or S.zone=="shortcuts" and home_hints.open
-        or g and (g.title_id~="0000000000000000" and home_hints.games or home_hints.start) or home_hints.open)
-    C.accent=home_accent
+    if notice then text(notice,1030,945,22,0x8b3e20,"center",1630)
+    elseif (S.home.status or "")~="" then text(S.home.status,1030,945,22,C.copy,"center",1630)
+    elseif (S.home_count or 0)==0 and not S.scanning then text("Add software in Game files.",1030,550,30,C.copy,"center",1500) end
+    hints(S.zone=="profiles" and (profile and profile.playing and home_hints.profile or home_hints.choose)
+        or S.zone=="shortcuts" and {{"updown","Select"},{"circle","Back"},{"cross","Open"}}
+        or g and (g.title_id~="0000000000000000" and home_hints.games or home_hints.start) or home_hints.open,1850,1015,28)
     for key,value in pairs(home_palette) do C[key]=value end
 end
+
 local function bubble(title,x,y,w)
     local center=x+w*.5
     w=math.max(180,math.min(980,measured(title,30)+42));local bx=clamp(center-w*.5,130.5,1786.5-w)
@@ -2040,6 +2043,12 @@ local function input(event)
     end
     if S.screen=="home" then
         if key=="triangle" then if S.zone=="games" then request_game_settings() else sound("error") end;return end
+        if S.zone=="shortcuts" and (key=="up" or key=="down") then
+            if key=="up" then
+                if S.focus==1 then S.zone="profiles" else S.focus=S.focus-1 end
+            else S.focus=clamp(S.focus+1,1,6) end
+            sound("focus_navigation");return
+        end
         if S.zone=="profiles" then
             if key=="left" or key=="right" then S.profile=clamp(S.profile+(key=="right" and 1 or -1),1,math.max(1,#S.profiles));sound("focus_account")
             elseif key=="down" or key=="circle" then home_zone("games");sound("focus_navigation")
@@ -2048,6 +2057,7 @@ local function input(event)
                 else local r=A("profile.choose",{handle=p.handle});if r.ok then refresh_models();sound("account_select") end end
             end end;return
         end
+        if S.zone=="shortcuts" and key=="circle" then home_zone("games");sound("back");return end
         if key=="up" then
             if S.zone=="shortcuts" and (S.home_count or 0)>0 then home_zone("games");sound("focus")
             elseif #S.profiles>0 then home_zone("profiles");sound("focus") end
@@ -2065,7 +2075,7 @@ local function input(event)
                     elseif target=="about" then run_button({action="launcher_update",enter=true}) end end
             end
         end
-        S.strip_target=S.zone=="games" and math.max(0,(S.focus-4)*405) or S.strip_target
+        S.strip_target=S.zone=="games" and math.max(0,(S.focus-4)*365) or S.strip_target
         return
     elseif S.screen=="library" then
         if key=="circle" then open("home");return
