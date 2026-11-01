@@ -1,5 +1,7 @@
 # Resource notices
 
+The HOME background (`assets/home-background.tga`) is the Zelda artwork supplied by the user in `fondo.rar` (`fondo.jpg`), also referenced at https://i.redd.it/d5g2jaawgw431.jpg. It is converted to TGA for the launcher without changing the artwork. Its original owners retain their rights; no additional license is asserted.
+
 The GPL-3.0-or-later license applies to this project's source code and release tools. It does not grant rights to third-party artwork, fonts or recordings.
 
 The Nintendo Switch-derived interface artwork, profile imagery, font resources and menu recordings included in this launcher retain Nintendo's rights. They were supplied for the Switch UI presentation and were extracted or converted from decrypted system resources. The controller artwork and other supplied resources retain their respective owners' rights.

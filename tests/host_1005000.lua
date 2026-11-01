@@ -70,7 +70,7 @@ local function has(text)for _,c in ipairs(commands) do if c.kind=="text" and c.a
 app.init({state={white=false,avatars={},recent={}},first_start=false});tick(90)
 check(S.modal==nil and S.offer_seen=="v1.006.000","Update notices Off suppresses the startup dialog and records the offer")
 S.screen="about";draw()
-check(has("ProsperoEden v1.006.000 is available") and has("App update"),"About advertises the app update even when notices are Off")
+check(has("ProsperoEden v1.006.000 está disponible") and has("Actualizar aplicación"),"About advertises the app update even when notices are Off")
 app.input({key="triangle"});check(S.modal=="update","About can manually open the ProsperoEden updater")
 S.modal=nil;U.view=true;app.updater_input({key="triangle"})
 check(actions[#actions].name=="launcher_updates.close" and S.pending_app_update,"The themed launcher updater closes before opening the app updater")
@@ -103,7 +103,7 @@ for _,row in ipairs(video) do if row.action=="frame_gen_setup" then method=row e
 check(method and frame,"MihawkGen setup stays accessible when Lossless.dll is absent")
 change(frame,1,false)
 check(model.preferences.frame_gen,"Existing frame-generation toggle works with the method saved in native settings")
-button(method,false);draw();check(S.modal=="frame_gen_setup" and has("Open built-in launcher"),"Method setup gives an explicit route to the built-in launcher")
+button(method,false);draw();check(S.modal=="frame_gen_setup" and has("Abrir launcher integrado"),"Method setup gives an explicit route to the built-in launcher")
 button(rows()[1]);check(actions[#actions].name=="launcher.select" and actions[#actions].args.id=="builtin","Method setup uses the supported built-in launcher action")
 for _,a in ipairs(actions) do if a.name=="preferences.set" or a.name=="game_settings.set" then check(not (a.args.frame_gen_method or (a.args.patch or {}).frame_gen_method),"Theme never writes an unexposed method field") end end
 modal("game",nil,false);local categories=rows();local mods_row,cheats_row
@@ -123,5 +123,5 @@ for _,white in ipairs({false,true}) do
 end
 model.cheats.cheats={};tick(20);modal("cheats",nil,false);draw()
 check(#S.rows==0,"Empty Cheats list has no misleading master switch")
-check(not has("Create the folder"),"Empty Cheats list does not invoke the Mods folder action")
+check(not has("Crear carpeta"),"Empty Cheats list does not invoke the Mods folder action")
 app.shutdown();print("RESULT "..checks.." host 1.005.000 checks passed")

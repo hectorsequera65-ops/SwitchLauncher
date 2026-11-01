@@ -51,15 +51,25 @@ local function title_x(value)for _,c in ipairs(commands) do if c.kind=="text" an
 local function mask()for _,c in ipairs(commands) do if c.kind=="rect" and c.p.w==1920 and c.p.h==1080 and c.p.color==0 then return c.p.alpha end end;return 0 end
 local function borders()local n=0;for _,c in ipairs(commands) do if c.kind=="border" and c.p.w==399 and c.p.edge_alpha>0 then n=n+1 end end;return n end
 app.init({state={avatars={},recent={},white=false},first_start=false});tick(180);draw();tick(2)
+draw()
+local wallpaper=false
+for _,command in ipairs(commands) do
+    if command.kind=="image" and command.p.asset=="home_background" then
+        wallpaper=command.p.x==0 and command.p.y==0 and command.p.w==1920 and command.p.h==1080
+    end
+end
+check(wallpaper,"HOME draws the supplied full-screen wallpaper")
+local palette=assert(upvalue(app.draw,"C"))
+check(palette.text==0xf5f5f5 and palette.shortcut==0x505050,"HOME restores the menu palette after drawing")
 for _=1,4 do key("right",1) end
 check(S.focus==5,"HOME selected the fifth game")
 key("down");key("right");key("right");key("up")
 check(S.zone=="games" and S.focus==5,"Returning from shortcuts restores the selected game")
 key("down");check(S.focus==3,"Returning to shortcuts restores the previous shortcut")
-draw();check(has("Open") and not has("Game settings"),"Shortcut footer contains only its usable action")
+draw();check(has("Abrir") and not has("Ajustes del juego"),"Shortcut footer contains only its usable action")
 key("up");key("up");key("right");draw()
-check(has("Use user") and not has("Game settings"),"Profile footer describes selecting another user")
-key("down");draw();check(S.focus==5 and has("Start") and has("Game settings"),"Profiles return to the game selection with game-specific hints")
+check(has("Usar usuario") and not has("Ajustes del juego"),"Profile footer describes selecting another user")
+key("down");draw();check(S.focus==5 and has("Iniciar") and has("Ajustes del juego"),"Profiles return to the game selection with game-specific hints")
 S.focus=2;S.strip=0;S.strip_target=0;tick(4);draw();key("right");draw();tick(2);draw()
 check(borders()==2,"Old and new game borders overlap during the authored unfocus fade")
 tick(4);draw();check(borders()==1,"Previous game border disappears after its short fade")
@@ -81,7 +91,7 @@ check(fades==2,"Long titles fade at both clipped edges while moving")
 
 S.zone="shortcuts";S.focus=3;key("cross");draw();check(mask()==0,"Dialog backdrop begins transparent")
 tick(4);draw();local partial=mask();check(partial>0 and partial<.68,"Dialog backdrop fades in with its surface")
-check(not has("Go offline"),"Offline multiplayer hides the unavailable Go offline shortcut")
+check(not has("Desconectar"),"Offline multiplayer hides the unavailable Go offline shortcut")
 key("square");check(not actions["room.leave"],"Offline Square does not call an unavailable disconnect action")
 key("circle");draw();check(S.modal_exit and mask()<=partial+.0001,"Closing during entry does not flash a fully opaque backdrop")
 tick(6);draw();check(mask()<partial,"Dialog backdrop fades out on Back")
@@ -93,7 +103,7 @@ S.prefs.reduce_motion=true;show_modal("choice",{values={"One"}},false);draw();ke
 check(not S.modal,"Reduce motion closes dialogs immediately")
 S.prefs.reduce_motion=false
 models.status.room.phase=1;tick(30);show_modal("room",{page="choice"},false);tick(10);draw()
-check(has("Go offline"),"Connecting multiplayer exposes the disconnect shortcut")
+check(has("Desconectar"),"Connecting multiplayer exposes the disconnect shortcut")
 key("square");check(actions["room.leave"]==1,"Connecting multiplayer can still be cancelled")
 key("circle",14)
 
@@ -101,13 +111,13 @@ open("about");tick(10);key("square");tick(4);draw();check(U.credits and mask()>0
 key("circle");tick(15);draw();check(not U.credits,"Credits also animates closed")
 
 models.library.games={};models.library.generation=3;S.library_dirty=true;tick(30);open("library");tick(65);draw()
-check(has("No software found.") and has("Open Game files"),"Empty library gives a useful setup action")
+check(has("No se encontraron juegos.") and has("Abrir archivos de juegos"),"Empty library gives a useful setup action")
 key("cross");check(S.screen=="files" and S.files.path=="/data/prosperoeden","Empty-library action opens the real host folder browser")
 key("circle");check(S.screen=="library","Folder browser returns to the empty library")
 
 S.screen="settings";S.category=2;S.content=true;S.row=9;S.choices.frame_gen_state=1;draw()
-check(has("Unavailable"),"Unavailable host options retain a visible disabled state")
-local explanation=false;for _,c in ipairs(commands) do if c.kind=="text" and c.p.text:find("not ready",1,true) then explanation=true end end
+check(has("No disponible"),"Unavailable host options retain a visible disabled state")
+local explanation=false;for _,c in ipairs(commands) do if c.kind=="text" and c.p.text:find("no está lista",1,true) then explanation=true end end
 check(explanation,"Unavailable frame generation explains why its options cannot be changed")
 open("home");tick(20);S.zone="games";S.focus=1
 S.tiles={{handle="removed",file="removed",name="Removed game",title_id="0000000000000001"}};S.home_count=1
@@ -116,4 +126,10 @@ check(S.library_dirty and S.home_dirty,"A cover invalidated by a native rescan u
 models.stale_artwork=nil
 show_modal("sort",nil,false);draw()
 check(#S.rows==2 and S.rows[1].action=="sort_title" and S.rows[2].action=="sort_file","Existing sorting choices remain unchanged")
+check(has("Por título") and has("Por nombre de archivo"),"Sort actions render Spanish labels")
+local translate=assert(upvalue(app.draw,"translated"))
+check(translate("System Settings (On)")=="Ajustes del sistema (Activado)","Inherited setting values use Spanish")
+check(translate("Version 1.005.001 is ready to install.")=="La versión 1.005.001 está lista para instalar.","Update versions retain their number in Spanish")
+check(translate("42% downloaded")=="42% descargado","Download progress uses Spanish")
+check(translate("Mi aventura favorita")=="Mi aventura favorita","Unknown game and user text is preserved")
 io.write("RESULT ",count," UI interaction checks passed\n")

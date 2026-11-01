@@ -1,0 +1,41 @@
+name: Build Spanish launcher with wallpaper
+
+on:
+  push:
+    branches: [spanish-zelda-launcher]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Test packaging tools
+        run: python3 -m unittest discover -s tests -v
+      - name: Install Lua
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y lua5.4
+      - name: Test launcher
+        run: |
+          lua5.4 tests/host_1005000.lua
+          lua5.4 tests/ui_polish.lua
+          lua5.4 tests/refresh_policy.lua
+          lua5.4 tests/scroll_motion.lua
+      - name: Build Spanish test pack
+        run: |
+          python3 tools/build_release.py --channel test
+          cd dist
+          sha256sum -c ./*.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: SwitchLauncher-Espanol-Fondo
+          path: |
+            dist/SwitchLauncher-Test-*.zip
+            dist/SwitchLauncher-Test-*.zip.sha256
+          if-no-files-found: error
+          retention-days: 30

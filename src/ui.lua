@@ -203,10 +203,397 @@ local home_hints={games={{"triangle","Game settings"},{"cross","Start"}},start={
     open={{"cross","Open"}},profile={{"cross","User settings"}},choose={{"cross","Use user"}}}
 local empty_hints={{"circle","Back"},{"cross","Open Game files"}}
 local room_hints={offline={{"cross","Select"},{"circle","Back"}},online={{"cross","Select"},{"square","Go offline"},{"circle","Back"}}}
+-- Spanish presentation strings. Host API identifiers and stored values stay unchanged.
+local spanish = {
+    ["Applies a visual preset with the Vulkan renderer. This game's reshade presets follow the shared presets."]="Aplica un filtro visual con Vulkan. Los filtros de este juego aparecen después de los compartidos.",
+    ["Applies a visual preset to the game picture. Requires the Vulkan renderer."]="Aplica un filtro visual al juego. Requiere Vulkan.",
+    ["Choose MihawkGen or Lossless Scaling in the built-in launcher. The frame generation controls here use that saved method."]="Elige MihawkGen o Lossless Scaling en el launcher integrado. Estos controles usan el método guardado allí.",
+    ["Uses the method saved in the built-in launcher. Choose MihawkGen there, or supply Lossless.dll for Lossless Scaling. Availability is checked when a game starts."]="Usa el método del launcher integrado. Elige allí MihawkGen o añade Lossless.dll para Lossless Scaling. Se comprueba al iniciar el juego.",
+    ["Frame generation is not ready in this ProsperoEden session. Its options become available when the host reports support."]="La generación de fotogramas no está lista en esta sesión de ProsperoEden. Sus opciones se habilitan cuando la aplicación confirma su disponibilidad.",
+    ["Compiles code used in earlier sessions as a game starts."]="Compila código de sesiones anteriores al iniciar un juego.",
+    ["Draws effects once their shaders are ready, reducing compilation pauses."]="Dibuja los efectos cuando sus sombreadores están listos para reducir las pausas de compilación.",
+    ["Lower GPU accuracy can be faster, but graphics may be incorrect."]="Reducir la precisión de GPU puede mejorar la velocidad y causar errores gráficos.",
+    ["Less exact floating-point math may affect some games."]="Reducir la precisión matemática puede afectar a algunos juegos.",
+    ["Less exact GPU transfers may affect graphics."]="Las transferencias de GPU menos precisas pueden afectar a los gráficos.",
+    ["Keeps GPU readback accurate. Disabling it may affect effects."]="Mantiene precisas las lecturas de GPU. Desactivarlo puede afectar a los efectos.",
+    ["Fewer invalidation checks may leave stale textures."]="Reducir estas comprobaciones puede dejar texturas sin actualizar.",
+    ["Gives back memory left mostly empty. Can cause stutters in games that keep rewriting it; leave off unless memory runs short."]="Libera memoria poco utilizada. Puede causar tirones en algunos juegos; actívalo solo si falta memoria.",
+    ["Allows a game to run faster when the console has capacity. Games tied to their frame rate may run their whole simulation faster. 100% keeps the original pace."]="Permite acelerar el juego si la consola tiene capacidad. Algunos juegos aceleran toda la simulación. El 100% conserva la velocidad original.",
+    ["Draws the menu's small text larger."]="Amplía el texto pequeño del menú.",
+    ["Solid surfaces and brighter text make the selection easier to see."]="Los fondos sólidos y el texto más brillante facilitan ver la selección.",
+    ["Limits menu transitions and loading-screen motion."]="Reduce las transiciones del menú y el movimiento de la pantalla de carga.",
+    ["Keeps the last line before a crash, but games stutter. From the next start."]="Conserva el último registro antes de un fallo, pero puede causar tirones. Se aplica al reiniciar.",
+    ["Shows a notice when a ProsperoEden update is found at startup. About still shows available updates. Launcher pack checks use their own setting."]="Muestra un aviso al encontrar una actualización de ProsperoEden al iniciar. Acerca de sigue mostrando las disponibles. Las actualizaciones del launcher tienen su propio ajuste.",
+    ["Each user keeps their own save data, settings and recent software."]="Cada usuario conserva sus propias partidas, ajustes y juegos recientes.",
+    ["Each user keeps their own save data, settings and recent games."]="Cada usuario conserva sus propias partidas, ajustes y juegos recientes.",
+    ["Each profile's save data on a server of its own, synced before and after a game."]="Cada perfil guarda sus partidas en su propio servidor y las sincroniza antes y después de jugar.",
+    ["Game audio settings apply when software starts. Menu sound volume changes immediately."]="Los ajustes de audio se aplican al iniciar un juego. El volumen del menú cambia al instante.",
+    ["Left touchpad + L1  End the game and return to this menu"]="Panel táctil izquierdo + L1  Cerrar el juego y volver a este menú",
+    ["Left touchpad + R1  Show or hide the FPS overlay"]="Panel táctil izquierdo + R1  Mostrar u ocultar el indicador de FPS",
+    ["Use extracted firmware NCA files. Choose the folder here; restart the app after changing it."]="Usa los archivos NCA del firmware extraído. Elige aquí la carpeta y reinicia la aplicación al cambiarla.",
+    ["Save data and settings are kept separately for each user."]="Las partidas y los ajustes se guardan por separado para cada usuario.",
+    ["Select this user to view their software."]="Selecciona este usuario para ver sus juegos.",
+    ["Add a user to this console."]="Añade un usuario a esta consola.",
+    ["No download sources are configured. Add your server to sources.json in the data folder, then read the lists again."]="No hay fuentes de descarga. Añade tu servidor a sources.json en la carpeta de datos y vuelve a cargar las listas.",
+    ["No downloads. In the Library, Square puts a game from a source in the queue."]="No hay descargas. En la biblioteca, Cuadrado añade un juego de una fuente a la cola.",
+    ["Browse the public directory and choose a room."]="Explora el directorio público y elige una sala.",
+    ["Connect using an address, port and password."]="Conéctate con una dirección, un puerto y una contraseña.",
+    ["Join a room before launching a game, then choose Local Wireless in the game."]="Únete a una sala antes de iniciar el juego y selecciona la conexión inalámbrica local dentro del juego.",
+    ["A fixed RNG seed loads this software at the same address on each launch. Choose Random to use a new address."]="Una semilla fija carga el juego en la misma dirección cada vez. Elige Aleatoria para usar otra dirección.",
+    ["Settings for this software apply on the next launch."]="Los ajustes de este juego se aplicarán al volver a iniciarlo.",
+    ["No cheats for this game yet. Add its cheat files to the folder below."]="No hay trucos para este juego. Añade sus archivos a la carpeta indicada.",
+    ["No mods for this game yet. Add patches and replacement files to the folder below."]="No hay modificaciones para este juego. Añade parches y archivos de reemplazo a la carpeta indicada.",
+    ["Choose MihawkGen or Lossless Scaling in Settings > Video > Frame gen method. For a game override, use that game's Video settings."]="Elige MihawkGen o Lossless Scaling en Settings > Video > Frame gen method del launcher integrado. Para un juego concreto, usa sus ajustes de vídeo.",
+    ["No downloads are queued. Add a game from a download source in All Software."]="No hay descargas en cola. Añade un juego desde una fuente de descarga en Todos los juegos.",
+    ["No save servers are configured. Check your save-sync server configuration."]="No hay servidores de partidas configurados. Revisa la configuración de sincronización.",
+    ["No download sources are available for this game. Refresh the sources and try again."]="No hay fuentes de descarga para este juego. Actualiza las fuentes e inténtalo de nuevo.",
+    ["No options are available here. Press Back to return."]="No hay opciones disponibles. Pulsa Volver para regresar.",
+    ["Free space on the device, then try the update again."]="Libera espacio y vuelve a intentar la actualización.",
+    ["Check access to ProsperoEden's data folder, then try again."]="Comprueba el acceso a la carpeta de datos de ProsperoEden e inténtalo de nuevo.",
+    ["Check your connection or try again later."]="Comprueba la conexión o inténtalo más tarde.",
+    ["Check your connection, then try again. The server may also be temporarily unavailable."]="Comprueba la conexión e inténtalo de nuevo. El servidor podría estar temporalmente fuera de servicio.",
+    ["Check the console date and time and try again later."]="Comprueba la fecha y la hora de la consola e inténtalo más tarde.",
+    ["Check for updates again. The release or update source may have moved."]="Vuelve a buscar actualizaciones. La versión o su fuente podrían haber cambiado de ubicación.",
+    ["The server may be limiting requests. Wait a while, then try again."]="El servidor podría estar limitando las solicitudes. Espera un poco e inténtalo de nuevo.",
+    ["Try again later."]="Inténtalo más tarde.",
+    ["Check for updates and download again. Invalid files will not be installed."]="Busca actualizaciones y vuelve a descargar. Los archivos no válidos no se instalarán.",
+    ["Use a compatible ProsperoEden version or wait for a compatible launcher release."]="Usa una versión compatible de ProsperoEden o espera una versión compatible del launcher.",
+    ["The update source needs to be corrected. Try again later."]="La fuente de actualización necesita una corrección. Inténtalo más tarde.",
+    ["Restart the app before trying again."]="Reinicia la aplicación antes de volver a intentarlo.",
+    ["Check free space and access to the app's data folder, then try again."]="Comprueba el espacio libre y el acceso a la carpeta de datos e inténtalo de nuevo.",
+    ["Finish or cancel the current operation, then try again."]="Termina o cancela la operación actual e inténtalo de nuevo.",
+    ["Try again. Keep the diagnostic details if the problem continues."]="Inténtalo de nuevo. Conserva el diagnóstico si el problema continúa.",
+    ["About"]="Acerca de",
+    ["Game files"]="Archivos de juegos",
+    ["Game Files"]="Archivos de juegos",
+    ["Multiplayer"]="Multijugador",
+    ["Controllers"]="Mandos",
+    ["System Settings"]="Ajustes del sistema",
+    ["Screen off"]="Apagar pantalla",
+    ["Game settings"]="Ajustes del juego",
+    ["Start"]="Iniciar",
+    ["Open"]="Abrir",
+    ["User settings"]="Ajustes de usuario",
+    ["Use user"]="Usar usuario",
+    ["Back"]="Volver",
+    ["Open Game files"]="Abrir archivos de juegos",
+    ["Select"]="Seleccionar",
+    ["Go offline"]="Desconectar",
+    ["All Software"]="Todos los juegos",
+    ["Your games"]="Tus juegos",
+    ["Add software in Game files."]="Añade juegos en Archivos de juegos.",
+    ["By File Name"]="Por nombre de archivo",
+    ["By Title"]="Por título",
+    ["Download"]="Descargar",
+    ["Looking for software..."]="Buscando juegos...",
+    ["No software found."]="No se encontraron juegos.",
+    ["Choose the folder that contains your games."]="Elige la carpeta que contiene tus juegos.",
+    ["Download and play"]="Descargar y jugar",
+    ["Options"]="Opciones",
+    ["Profiles"]="Perfiles",
+    ["Video"]="Vídeo",
+    ["Performance"]="Rendimiento",
+    ["Audio"]="Audio",
+    ["Accessibility"]="Accesibilidad",
+    ["System"]="Sistema",
+    ["Themes"]="Temas",
+    ["Downloads"]="Descargas",
+    ["Save sync"]="Sincronización de partidas",
+    ["Save Sync"]="Sincronización de partidas",
+    ["Console mode"]="Modo de consola",
+    ["Controls"]="Controles",
+    ["Mods"]="Modificaciones",
+    ["Cheats"]="Trucos",
+    ["Save data"]="Datos guardados",
+    ["Save Data"]="Datos guardados",
+    ["Delete from console"]="Eliminar de la consola",
+    ["Renderer"]="Motor gráfico",
+    ["Output resolution"]="Resolución de salida",
+    ["Resolution"]="Resolución",
+    ["Upscaling filter"]="Filtro de escalado",
+    ["ASTC textures"]="Texturas ASTC",
+    ["Refresh rate"]="Frecuencia de actualización",
+    ["FPS overlay"]="Mostrar FPS",
+    ["Overlay options"]="Opciones del indicador",
+    ["Frame generation"]="Generación de fotogramas",
+    ["Frame gen target"]="Frecuencia objetivo",
+    ["Frame gen multiplier"]="Multiplicador de fotogramas",
+    ["Overlay size"]="Tamaño del indicador",
+    ["Overlay corner"]="Posición del indicador",
+    ["Regular"]="Normal",
+    ["Medium"]="Mediano",
+    ["Large"]="Grande",
+    ["Top left"]="Arriba a la izquierda",
+    ["Top right"]="Arriba a la derecha",
+    ["Bottom left"]="Abajo a la izquierda",
+    ["Bottom right"]="Abajo a la derecha",
+    ["Post-processing"]="Posprocesado",
+    ["Frame gen method"]="Método de generación",
+    ["Built-in launcher"]="Launcher integrado",
+    ["Compile ahead"]="Compilación anticipada",
+    ["Asynchronous shaders"]="Sombreadores asíncronos",
+    ["Faster GPU emulation"]="Emulación de GPU rápida",
+    ["Faster CPU emulation"]="Emulación de CPU rápida",
+    ["Faster DMA"]="DMA rápido",
+    ["Reactive flushing"]="Vaciado reactivo",
+    ["Skip CPU invalidation"]="Omitir invalidación de CPU",
+    ["Compact memory"]="Compactar memoria",
+    ["Unlimited"]="Sin límite",
+    ["Speed limit"]="Límite de velocidad",
+    ["Game volume"]="Volumen del juego",
+    ["Mute"]="Silenciar",
+    ["Menu sounds"]="Sonidos del menú",
+    ["Vibration"]="Vibración",
+    ["Vibration strength"]="Intensidad de vibración",
+    ["Change Button Mapping"]="Configurar botones",
+    ["Button mapping"]="Asignación de botones",
+    ["Controller type"]="Tipo de mando",
+    ["Handheld"]="Portátil",
+    ["Two Joy-Cons"]="Dos Joy-Con",
+    ["Left Joy-Con"]="Joy-Con izquierdo",
+    ["Right Joy-Con"]="Joy-Con derecho",
+    ["Larger text"]="Texto más grande",
+    ["High contrast"]="Alto contraste",
+    ["Reduce motion"]="Reducir movimiento",
+    ["Detailed logging"]="Registro detallado",
+    ["Write logs at once"]="Escribir registros al instante",
+    ["Update notices"]="Avisos de actualización",
+    ["RNG seed"]="Semilla aleatoria",
+    ["Random"]="Aleatoria",
+    ["Basic White"]="Blanco básico",
+    ["Basic Black"]="Negro básico",
+    ["Launcher"]="Launcher",
+    ["Current user"]="Usuario actual",
+    ["Current User"]="Usuario actual",
+    ["Add user"]="Añadir usuario",
+    ["Add User"]="Añadir usuario",
+    ["Refresh sources"]="Actualizar fuentes",
+    ["Download queue"]="Cola de descargas",
+    ["Not linked"]="Sin vincular",
+    ["Pairing status"]="Estado de vinculación",
+    ["This game"]="Este juego",
+    ["System Settings (As usual)"]="Ajustes del sistema (habituales)",
+    ["Changed"]="Modificado",
+    ["Default"]="Predeterminado",
+    ["On"]="Activado",
+    ["Off"]="Desactivado",
+    ["Unavailable"]="No disponible",
+    ["Saved for this game. Applies on next launch."]="Guardado para este juego. Se aplicará al volver a iniciarlo.",
+    ["Saved. Applies when a game starts."]="Guardado. Se aplicará al iniciar un juego.",
+    ["Saved."]="Guardado.",
+    ["Frame generation is unavailable."]="La generación de fotogramas no está disponible.",
+    ["Follows Settings"]="Usar ajustes generales",
+    ["User Settings"]="Ajustes de usuario",
+    ["Not set up"]="Sin configurar",
+    ["System Information"]="Información del sistema",
+    ["Connected controllers"]="Mandos conectados",
+    ["Menu buttons"]="Botones del menú",
+    ["Data Management"]="Gestión de datos",
+    ["No folders here."]="No hay carpetas aquí.",
+    ["Keys"]="Claves",
+    ["Firmware"]="Firmware",
+    ["Software"]="Juegos",
+    ["Current Folder"]="Carpeta actual",
+    ["Ready"]="Listo",
+    ["Missing"]="Falta",
+    ["Page"]="Página",
+    ["Use this folder"]="Usar esta carpeta",
+    ["Ready to check for updates"]="Listo para buscar actualizaciones",
+    ["No update source configured"]="No hay una fuente de actualización",
+    ["Checking for updates..."]="Buscando actualizaciones...",
+    ["Your launcher is up to date."]="El launcher está actualizado.",
+    ["An update is available."]="Hay una actualización disponible.",
+    ["Downloading update..."]="Descargando actualización...",
+    ["Checking downloaded files..."]="Verificando archivos descargados...",
+    ["Installing update..."]="Instalando actualización...",
+    ["Update complete."]="Actualización completada.",
+    ["Could not update."]="No se pudo actualizar.",
+    ["Update cancelled."]="Actualización cancelada.",
+    ["Check for updates"]="Buscar actualizaciones",
+    ["Update"]="Actualizar",
+    ["About Switch"]="Acerca de Switch",
+    ["Previous version restored."]="Se restauró la versión anterior.",
+    ["Downloading..."]="Descargando...",
+    ["Keep the app open until the update finishes."]="Mantén la aplicación abierta hasta que termine la actualización.",
+    ["This launcher does not provide an update source."]="Este launcher no incluye una fuente de actualización.",
+    ["Finish the current operation before updating."]="Termina la operación actual antes de actualizar.",
+    ["Details saved in launcher state."]="Diagnóstico guardado en el estado del launcher.",
+    ["Return to HOME to save diagnostic details."]="Vuelve al inicio para guardar el diagnóstico.",
+    ["Diagnostic details could not be saved."]="No se pudo guardar el diagnóstico.",
+    ["App update"]="Actualizar aplicación",
+    ["Credits"]="Créditos",
+    ["Cancel"]="Cancelar",
+    ["Emulation"]="Emulación",
+    ["Eden developers and contributors"]="Desarrolladores y colaboradores de Eden",
+    ["PS5 port"]="Adaptación a PS5",
+    ["Artwork & menu sounds"]="Arte y sonidos del menú",
+    ["Select this User"]="Seleccionar este usuario",
+    ["Edit Icon"]="Editar icono",
+    ["Edit icon"]="Editar icono",
+    ["Rename"]="Cambiar nombre",
+    ["Remove"]="Eliminar",
+    ["Choose a Background"]="Elige un fondo",
+    ["Choose an Icon"]="Elige un icono",
+    ["Left stick"]="Palanca izquierda",
+    ["Right stick"]="Palanca derecha",
+    ["Cross"]="Cruz",
+    ["Circle"]="Círculo",
+    ["Square"]="Cuadrado",
+    ["Triangle"]="Triángulo",
+    ["Touchpad"]="Panel táctil",
+    ["Controller Settings"]="Ajustes del mando",
+    ["Reset"]="Restablecer",
+    ["Change"]="Cambiar",
+    ["Docked"]="Sobremesa",
+    ["No mods"]="Sin modificaciones",
+    ["No cheats"]="Sin trucos",
+    ["Select / confirm"]="Seleccionar / confirmar",
+    ["Secondary action"]="Acción secundaria",
+    ["Game options"]="Opciones del juego",
+    ["Reset menu buttons"]="Restablecer botones del menú",
+    ["Enable colors"]="Activar colores",
+    ["Size"]="Tamaño",
+    ["Corner"]="Posición",
+    ["Frame time"]="Tiempo por fotograma",
+    ["Speed"]="Velocidad",
+    ["Memory"]="Memoria",
+    ["CPU by core"]="CPU por núcleo",
+    ["Render resolution"]="Resolución de renderizado",
+    ["All mods"]="Todas las modificaciones",
+    ["All cheats"]="Todos los trucos",
+    ["Open built-in launcher"]="Abrir launcher integrado",
+    ["Import save data"]="Importar datos guardados",
+    ["Export save data"]="Exportar datos guardados",
+    ["Continue"]="Continuar",
+    ["Queued"]="En cola",
+    ["Keep downloading in the background"]="Seguir descargando en segundo plano",
+    ["Cancel download"]="Cancelar descarga",
+    ["Pair with server"]="Vincular con un servidor",
+    ["Unlink server"]="Desvincular servidor",
+    ["Keep console save"]="Conservar partida de la consola",
+    ["Use server save"]="Usar partida del servidor",
+    ["Change nothing"]="No cambiar nada",
+    ["Try again"]="Reintentar",
+    ["Play without sync"]="Jugar sin sincronizar",
+    ["Update now"]="Actualizar ahora",
+    ["Download update"]="Descargar actualización",
+    ["What's new"]="Novedades",
+    ["What's New"]="Novedades",
+    ["Disconnect"]="Desconectar",
+    ["Address"]="Dirección",
+    ["Port"]="Puerto",
+    ["Nickname"]="Apodo",
+    ["Password"]="Contraseña",
+    ["Connect"]="Conectar",
+    ["Public rooms"]="Salas públicas",
+    ["Private room"]="Sala privada",
+    ["A ProsperoEden update is available."]="Hay una actualización de ProsperoEden disponible.",
+    ["Starting download..."]="Iniciando descarga...",
+    ["Preparing update files..."]="Preparando archivos de actualización...",
+    ["Ready to install."]="Listo para instalar.",
+    ["Installing ProsperoEden..."]="Instalando ProsperoEden...",
+    ["Could not update ProsperoEden."]="No se pudo actualizar ProsperoEden.",
+    ["Updating ProsperoEden..."]="Actualizando ProsperoEden...",
+    ["No ProsperoEden update is currently offered."]="No hay actualizaciones de ProsperoEden disponibles.",
+    ["Choose Update now to install the downloaded application."]="Elige Actualizar ahora para instalar la aplicación descargada.",
+    ["This updates the ProsperoEden application. Switch UI is updated separately in About."]="Esto actualiza ProsperoEden. Switch UI se actualiza por separado en Acerca de.",
+    ["Choose an option"]="Elige una opción",
+    ["Sort Software"]="Ordenar juegos",
+    ["Basic Theme"]="Tema básico",
+    ["Choose a Launcher"]="Elige un launcher",
+    ["Are you sure?"]="¿Estás seguro?",
+    ["Download from"]="Descargar desde",
+    ["Choose a Server"]="Elige un servidor",
+    ["ProsperoEden Update"]="Actualización de ProsperoEden",
+    ["Pairing"]="Vinculación",
+    ["Not connected yet"]="Aún sin conexión",
+    ["Read the lists again"]="Volver a cargar las listas",
+    ["Offline"]="Sin conexión",
+    ["Connecting..."]="Conectando...",
+    ["Connected"]="Conectado",
+    ["Leaving..."]="Desconectando...",
+    ["Connection failed"]="Error de conexión",
+    ["Refreshing..."]="Actualizando...",
+    ["Players"]="Jugadores",
+    ["Refresh"]="Actualizar",
+    ["Loading public rooms..."]="Cargando salas públicas...",
+    ["No public rooms found."]="No se encontraron salas públicas.",
+    ["Choose a menu button"]="Elige un botón del menú",
+    ["Create the folder"]="Crear carpeta",
+    ["Turn on or off"]="Activar o desactivar",
+    ["Settings"]="Ajustes",
+    ["No release notes are available."]="No hay notas de la versión disponibles.",
+    ["Synchronizing save data..."]="Sincronizando datos guardados...",
+    ["Waiting for the download..."]="Esperando la descarga...",
+    ["Download the game to change its settings."]="Descarga el juego para cambiar sus ajustes.",
+    ["This game has no title ID; its settings cannot be saved."]="Este juego no tiene ID; no se pueden guardar sus ajustes.",
+    ["Download queued."]="Descarga en cola.",
+    ["Saved. Reopen Switch to use this folder."]="Guardado. Reinicia Switch para usar esta carpeta.",
+    ["This folder cannot be opened."]="No se puede abrir esta carpeta.",
+    ["This room uses a different protocol version."]="Esta sala usa una versión de protocolo diferente.",
+    ["Background color"]="Color de fondo",
+    ["Change nickname"]="Cambiar apodo",
+    ["Delete user"]="Eliminar usuario",
+    ["The profile that is playing stays. Choose another one first."]="No puedes eliminar el perfil activo. Selecciona otro primero.",
+    ["Default folder saved. Reopen Switch to use it."]="Carpeta predeterminada guardada. Reinicia Switch para usarla.",
+    ["Download ended before the game was available."]="La descarga terminó antes de que el juego estuviera disponible.",
+    ["Save data synchronized."]="Datos guardados sincronizados.",
+    ["Save sync failed."]="Error al sincronizar la partida.",
+    ["Could not complete this operation. Please try again."]="No se pudo completar la operación. Inténtalo de nuevo.",
+    ["Launcher settings could not be saved."]="No se pudieron guardar los ajustes del launcher.",
+    ["Launcher settings could not be saved. Free some storage and try again."]="No se pudieron guardar los ajustes. Libera espacio e inténtalo de nuevo.",
+    ["Launcher settings could not be saved. Access to the data folder was denied."]="No se pudieron guardar los ajustes. Se denegó el acceso a la carpeta de datos.",
+    ["Not enough free storage."]="No hay suficiente espacio libre.",
+    ["Access to update files was denied."]="Se denegó el acceso a los archivos de actualización.",
+    ["The update server did not respond."]="El servidor de actualización no respondió.",
+    ["Cannot reach the update server."]="No se puede conectar al servidor de actualización.",
+    ["A secure connection could not be established."]="No se pudo establecer una conexión segura.",
+    ["The update file could not be found."]="No se encontró el archivo de actualización.",
+    ["The update server refused the request."]="El servidor de actualización rechazó la solicitud.",
+    ["The update server is unavailable."]="El servidor de actualización no está disponible.",
+    ["The downloaded files failed verification."]="Los archivos descargados no superaron la verificación.",
+    ["This update is not compatible."]="Esta actualización no es compatible.",
+    ["The update information is invalid."]="La información de actualización no es válida.",
+    ["The previous update needs recovery."]="La actualización anterior requiere recuperación.",
+    ["The update files could not be saved."]="No se pudieron guardar los archivos de actualización.",
+    ["Another operation is still running."]="Hay otra operación en curso.",
+    ["Something went wrong with the update."]="Se produjo un error al actualizar.",
+}
+local function translated(value)
+    value=tostring(value or "")
+    if spanish[value] then return spanish[value] end
+    local version=value:match("^ProsperoEden (.-) is available$")
+    if version then return "ProsperoEden "..version.." está disponible" end
+    local settings=value:match("^System Settings %((.*)%)$")
+    if settings then return "Ajustes del sistema ("..(spanish[settings] or settings)..")" end
+    local prefix, rest=value:match("^(Current version: )(.*)$")
+    if prefix then return "Versión actual: "..rest end
+    rest=value:match("^Available version: (.*)$")
+    if rest then return "Versión disponible: "..rest end
+    rest=value:match("^Version (.-) is ready to install%.$")
+    if rest then return "La versión "..rest.." está lista para instalar." end
+    rest=value:match("^(%d+)%% downloaded$")
+    if rest then return rest.."% descargado" end
+    rest=value:match("^(%d+) changed$")
+    if rest then return rest.." modificados" end
+    rest=value:match("^(%d+) games$")
+    if rest then return rest.." juegos" end
+    rest=value:match("^(%d+) public rooms$")
+    if rest then return rest.." salas públicas" end
+    rest=value:match("^(%d+) sources$")
+    if rest then return rest.." fuentes" end
+    local active,total=value:match("^(%d+) of (%d+) on$")
+    if active then return active.." de "..total.." activados" end
+    rest=value:match("^(.*)'s Page$")
+    if rest then return "Perfil de "..rest end
+    rest=value:match("^Paired as (.*)$")
+    if rest then return "Vinculado como "..rest end
+    return value
+end
 local function text(value,x,y,size,ink,align,width)
     size=size or 30
     local drawn=S.prefs.large_text and size<30 and math.min(30,size*1.3) or size
-    local p=text_args;p.text=tostring(value or "");p.x=x;p.y=y+(drawn-size)*.35;p.size=size;p.color=ink or C.text;p.align=align or "left";p.width=width or 1900
+    local p=text_args;p.text=translated(value);p.x=x;p.y=y+(drawn-size)*.35;p.size=size;p.color=ink or C.text;p.align=align or "left";p.width=width or 1900
     D("text",p)
 end
 local function box(x,y,w,h,ink,alpha,radius) local p=box_args;p.x=x;p.y=y;p.w=w;p.h=h;p.color=ink;p.alpha=alpha or 1;p.radius=radius or 0;D("rect",p) end
@@ -216,6 +603,7 @@ local function circle(x,y,r,ink,alpha) local p=circle_args;p.x=x;p.y=y;p.radius=
 local function ring(x,y,r,thick,ink,alpha) local p=ring_args;p.x=x;p.y=y;p.radius=r;p.thickness=thick;p.color=ink;p.alpha=alpha or 1;D("ring",p) end
 local measure_cache,measure_count={},0
 local function measured(value,size)
+    value=translated(value)
     size=size or 30;if S.prefs.large_text and size<30 then size=math.min(30,size*1.3) end
     value=tostring(value or "")
     local bucket=measure_cache[size]
@@ -228,6 +616,7 @@ local function measured(value,size)
 end
 local wrap_cache={};local wrap_count=0
 local function wrapped(value,size,width)
+    value=translated(value)
     value=tostring(value or "")
     local key=tostring(S.prefs.large_text)..":"..size..":"..width..":"..value
     if wrap_cache[key] then return wrap_cache[key] end
@@ -553,6 +942,14 @@ local function marquee(value,x,y,w,size,context,background)
     unclip()
 end
 local function render_home()
+    -- The supplied 16:9 artwork fills HOME without cropping or distortion.
+    image("home_background",0,0,1920,1080)
+    D("gradient",{x=0,y=0,w=1920,h=1080,axis="vertical",color=0,other=0,alpha=.15,other_alpha=.7})
+    local home_palette={text=C.text,title=C.title,copy=C.copy,meta=C.meta,line=C.line,shortcut=C.shortcut}
+    C.text=0xf5f5f5;C.title=0xffffff;C.copy=0xeeeeee;C.meta=0xdadada;C.line=0x777777;C.shortcut=0x424a50
+    -- Use the reference's blue selection without changing menu appearance.
+    local home_accent=C.accent
+    C.accent=0x55c9ff
     local selected_key=S.zone=="profiles" and 200+S.profile or S.zone=="shortcuts" and 100+S.focus or S.focus
     track_focus(focus_history.home,selected_key)
     for i,p in ipairs(S.profiles) do local x=100.5+(i-1)*90
@@ -561,7 +958,11 @@ local function render_home()
         if amount>0 then focus(x,62,72,72,true,amount) end
         avatar(p,x,62,72,true);ring(x+36,98,37,2,C.title,.7)
         if p.playing and not selected then box(x+16,144,40,4,C.accent,1,2) end
-        if selected then text(p.name,x+36,178,28,C.accent,"center",240) end
+        if selected or (p.playing and S.zone~="profiles") then
+            local name_width=math.min(330,measured(p.name,28)+40)
+            box(x+88,76,name_width,48,0x202a32,.65,24)
+            text(p.name,x+108,110,28,0xffffff,"left",name_width-40)
+        end
     end
     text(S.status.clock,1814,115.5,30,C.text,"right")
     local phase=(S.status.room or {}).phase or 0
@@ -571,6 +972,8 @@ local function render_home()
     local gs=S.prefs.reduce_motion and 1 or curve(S.first_start and "home_starter_scale" or "home_entry_scale",intro*60)
     opacity(ga);transform(gs,960,483)
     local g=S.tiles[S.focus]; local title=g and g.name or (S.home_library and "All Software" or ""); local selected_x=160.5+(S.focus-1)*405-S.strip
+    box(828,190,264,48,0x202a32,.65,24)
+    text("Your games",960,224,28,0xffffff,"center",240)
     if S.zone=="games" then local w=math.min(900,math.max(450,measured(title,32)));marquee(title,clamp(selected_x+192-w*.5,112,1808-w),258,w,32,"home",C.base)
     elseif (S.home_count or 0)==0 and not S.scanning then text("Add software in Game files.",160.5,258,30,C.copy,"left",1599) end
     clip(0,278,1920,426)
@@ -578,7 +981,8 @@ local function render_home()
         local x=160.5+(i-1)*405-S.strip;local all=S.home_library and i==#S.tiles+1;local blank=not all and not S.tiles[i]
         if x+384>0 and x<1920 then
             local scale=(S.launch_time and S.focus==i) and curve("decide_scale",S.launch_time*60) or 1
-            transform(S.prefs.reduce_motion and 1 or scale,x+192,483)
+            local selected_scale=S.zone=="games" and S.focus==i and 1.035 or 1
+            transform((S.prefs.reduce_motion and 1 or scale)*selected_scale,x+192,483)
             if blank then
                 -- Baked P_Blank material: no cover lookup or live blur for empty slots.
                 image("home_blank",x-12,279,408,408,home_blank_uv[S.state.white and 2 or 1])
@@ -606,7 +1010,7 @@ local function render_home()
         local amount=focus_amount(focus_history.home,100+i)
         if amount>0 then focus(x-66,750,132,132,true,amount) end
         if S.zone=="shortcuts" and S.focus==i then text(home_shortcuts[i],x,918,24,C.accent,"center",330) end
-        circle(x,816,66,C.shortcut)
+        circle(x,816,66,C.shortcut,.78)
         symbol(i,x,816,i<=4 and 132 or 96,shortcut_inks[i] or C.title)
     end
     untransform();popopacity()
@@ -617,6 +1021,8 @@ local function render_home()
     footer(S.zone=="profiles" and (p and p.playing and home_hints.profile or home_hints.choose)
         or S.zone=="shortcuts" and home_hints.open
         or g and (g.title_id~="0000000000000000" and home_hints.games or home_hints.start) or home_hints.open)
+    C.accent=home_accent
+    for key,value in pairs(home_palette) do C[key]=value end
 end
 local function bubble(title,x,y,w)
     local center=x+w*.5

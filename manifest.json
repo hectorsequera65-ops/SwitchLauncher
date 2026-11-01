@@ -22,7 +22,8 @@
     "controller": "assets/controller.tga",
     "about": "assets/about-outline.tga",
     "about_update": "assets/about-update.tga",
-    "home_blank": "assets/home-blank.tga"
+    "home_blank": "assets/home-blank.tga",
+    "home_background": "assets/home-background.tga"
   },
   "font": "assets/font.pefont",
   "sounds": "assets/sounds",

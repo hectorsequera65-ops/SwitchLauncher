@@ -70,7 +70,7 @@ Screenshots supplied by the project author. Games shown are not included.
 - A **ProsperoEden Update** dialog for application updates, using the same progress-bar style as launcher updates.
 - Optimized Lua drawing, query and layout handling.
 
-The interface is English-only and uses a fixed layout. New ProsperoEden features may require an updated launcher before controls for them appear here.
+This version presents the launcher menus in Spanish and uses a fixed layout. Names, release notes and messages supplied by ProsperoEden or external servers retain their original language. New ProsperoEden features may require an updated launcher before controls for them appear here.
 
 ## Installation
 
